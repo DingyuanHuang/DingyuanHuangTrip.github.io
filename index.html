@@ -39,21 +39,22 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        // Lucide 图标组件封装 (因为 CDN 版 Lucide 不能直接作为 React 组件导入，需手动封装或使用 createLucideIcon，这里简化处理使用 i 标签配合 lucide createIcons)
-        // 为了在 React 中更方便使用，我们定义简单的 SVG 组件替代，或者使用 lucide-react 的 UMD 构建（较复杂）。
-        // 这里为了单文件便携性，直接使用 SVG 字符串或简易封装。
-        
-        // 简易 SVG 图标组件
+        // 简易 SVG 图标组件封装
+        // Lucide 官方 CDN 版通过 lucide.createIcons() 扫描 DOM 渲染图标
+        // 为了在 React 中动态渲染，我们封装一个组件在挂载时触发渲染
         const Icon = ({ name, className }) => {
             useEffect(() => {
                 lucide.createIcons();
-            }, [name]);
+            }, [name]); // 当 name 变化时重新渲染
+            
+            // 使用 i 标签作为图标容器
             return <i data-lucide={name} className={className}></i>;
         };
 
         const App = () => {
             const [activeTab, setActiveTab] = useState('day1');
 
+            // 确保 Tab 切换时图标重新渲染
             useEffect(() => {
                 lucide.createIcons();
             }, [activeTab]);
@@ -66,6 +67,20 @@
 
             const restaurantData = {
                 asian: [
+                    {
+                        name: "Beijing House (北京楼)",
+                        addr: "1441 E Fletcher Ave #107, Tampa, FL 33612",
+                        note: "地道的中餐馆，提供北方菜和川菜，位于坦帕北部，非常适合从Gainesville下来作为第一站。",
+                        type: "food",
+                        mapLink: "https://www.google.com/maps/search/?api=1&query=Beijing+House+Tampa"
+                    },
+                    {
+                        name: "Nene's Restaurant & Bar",
+                        addr: "4328 W El Prado Blvd, Tampa, FL 33629",
+                        note: "评价极高的东欧风味餐厅，位于南坦帕，适合想要尝试不同风味的食客。",
+                        type: "food",
+                        mapLink: "https://www.google.com/maps/search/?api=1&query=Nene's+Restaurant+and+Bar+Tampa"
+                    },
                     { 
                         name: "Umi Sushi & Seafood Buffet", 
                         addr: "1528 W Brandon Blvd, Brandon, FL 33510", 
@@ -76,7 +91,7 @@
                     { 
                         name: "Sushi Yama", 
                         addr: "10017 E Adamo Dr, Tampa, FL 33619", 
-                        note: "Brandon 邻近区域日式料理，提供精致餐点。",
+                        note: "Brandon 邻近区域日式料理，提供精致餐点，晚餐氛围佳。",
                         type: "food",
                         mapLink: "https://www.google.com/maps/search/?api=1&query=Sushi+Yama+Tampa"
                     },
@@ -147,31 +162,31 @@
                 day1: [
                     {
                         time: "09:00 AM",
-                        title: "启程：Gainesville ➝ Brandon",
-                        desc: "上午准时出发，沿 I-75 S 向南行驶。避开坦帕市中心拥堵路段，直接前往东部 Brandon 地区用餐。",
+                        title: "启程：Gainesville ➝ Tampa North",
+                        desc: "上午准时出发，沿 I-75 S 向南行驶。我们将直接前往坦帕北部的 USF 附近区域，这里交通便利且有许多优秀的中餐选择。",
                         type: "transport",
                         duration: "约 2 小时"
                     },
                     {
-                        time: "12:00 PM",
-                        title: "午餐：Umi Sushi & Seafood Buffet",
-                        desc: "抵达 Brandon。该海鲜自助评价优良，海鲜和寿司种类丰富，适合作为行程首站用餐点。",
-                        address: "1528 W Brandon Blvd, Brandon, FL 33510",
-                        mapLink: "https://www.google.com/maps/search/?api=1&query=Umi+Sushi+Seafood+Buffet+Brandon",
+                        time: "11:30 AM",
+                        title: "午餐：Beijing House (北京楼)",
+                        desc: "抵达坦帕北部。这家餐厅主打地道北方菜和川菜，口味正宗，是开启旅程的绝佳第一站。",
+                        address: "1441 E Fletcher Ave #107, Tampa, FL 33612",
+                        mapLink: "https://www.google.com/maps/search/?api=1&query=Beijing+House+Tampa",
                         type: "food"
                     },
                     {
-                        time: "02:00 PM",
+                        time: "01:30 PM",
                         title: "游览 Ybor City (历史街区)",
-                        desc: "午餐后向西行驶，途经 Ybor City。此为坦帕最古老街区，保留红砖雪茄工厂建筑群及复古有轨电车，适合散步游览。",
+                        desc: "午餐后向南行驶，途经 Ybor City。此为坦帕最古老街区，保留红砖雪茄工厂建筑群及复古有轨电车，适合散步游览。",
                         address: "E 7th Ave, Tampa, FL 33605",
                         mapLink: "https://www.google.com/maps/search/?api=1&query=Ybor+City",
                         type: "city"
                     },
                     {
-                        time: "04:00 PM",
-                        title: "Clearwater 办理入住",
-                        desc: "穿越坦帕湾，前往位于 Clearwater 的住宿点办理入住手续。",
+                        time: "03:30 PM",
+                        title: "前往 Clearwater 办理入住",
+                        desc: "穿越坦帕湾，前往位于 Clearwater 的住宿点办理入住手续，稍作休息。",
                         address: accommodation.address,
                         mapLink: accommodation.link,
                         type: "hotel"
@@ -186,10 +201,10 @@
                     },
                     {
                         time: "07:30 PM",
-                        title: "海滨晚餐：Frenchy's Rockaway Grill",
-                        desc: "于沙滩边餐厅享用晚餐。该店以 Grouper Sandwich（石斑鱼三明治）闻名，环境轻松惬意。",
-                        address: "7 Rockaway St, Clearwater, FL 33767",
-                        mapLink: "https://www.google.com/maps/search/?api=1&query=Frenchy's+Rockaway+Grill",
+                        title: "晚餐：Sushi Yama",
+                        desc: "驱车前往坦帕东部/Brandon方向（或如果觉得太远，可改为在Clearwater附近用餐，但按您的计划是去Sushi Yama）。这家日料店环境精致，食材新鲜。",
+                        address: "10017 E Adamo Dr, Tampa, FL 33619",
+                        mapLink: "https://www.google.com/maps/search/?api=1&query=Sushi+Yama+Tampa",
                         type: "food"
                     }
                 ],
@@ -267,6 +282,7 @@
                 }
             };
 
+            // 根据类型获取图标名称和样式
             const getTypeStyle = (type) => {
                 switch(type) {
                     case 'food': return { icon: 'utensils', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' };
@@ -343,7 +359,7 @@
                         {activeTab === 'food' ? (
                             <div className="space-y-12 animate-fadeIn">
                                 {[
-                                    { title: "Asian Cuisine (日式/亚洲)", color: "text-red-700", borderColor: "border-red-200", data: restaurantData.asian },
+                                    { title: "Asian Cuisine (日式/亚洲/中式)", color: "text-red-700", borderColor: "border-red-200", data: restaurantData.asian },
                                     { title: "Latin & Spanish (拉丁风味)", color: "text-amber-700", borderColor: "border-amber-200", data: restaurantData.latin },
                                     { title: "Seafood & Casual (海鲜/休闲)", color: "text-sky-700", borderColor: "border-sky-200", data: restaurantData.seafood }
                                 ].map((section, idx) => (
@@ -405,7 +421,9 @@
                                                 <div className="flex flex-col items-center shrink-0 w-16 pt-1">
                                                     <span className="text-xs font-bold text-slate-400 mb-1">{item.time.split(' ')[1]}</span>
                                                     <span className="text-sm font-bold text-slate-800">{item.time.split(' ')[0]}</span>
-                                                    <div className="h-full w-px bg-gray-200 my-3 group-last:bg-transparent relative"></div>
+                                                    <div className="h-full w-px bg-gray-200 my-3 group-last:bg-transparent relative">
+                                                        {/* Timeline Dot (Optional decorative) */}
+                                                    </div>
                                                 </div>
 
                                                 {/* Content Card */}
@@ -429,7 +447,7 @@
                                                     {/* 操作按钮栏 */}
                                                     {(item.address || item.mapLink) && (
                                                         <div className="flex flex-wrap gap-3 relative z-10">
-                                                            {/* 实景查看按钮 */}
+                                                            {/* 实景查看按钮 (保留的核心功能) */}
                                                             <a 
                                                                 href={item.mapLink} 
                                                                 target="_blank" 
